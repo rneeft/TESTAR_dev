@@ -67,7 +67,7 @@ public class FlashFeedback  extends JDialog implements Runnable {
 	
 	public static void flash(String title, int duration){
 		if(duration>1000) FLASH_DURATION = duration;
-		new FlashFeedback(title).run();
+		  new FlashFeedback(title).run();
 	}
 	
 	@Override
