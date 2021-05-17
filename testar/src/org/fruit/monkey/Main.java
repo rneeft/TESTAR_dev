@@ -519,7 +519,6 @@ public class Main {
 			defaults.add(Pair.from(ProtocolSpecificSetting_3, ""));
 			defaults.add(Pair.from(ProtocolSpecificSetting_4, ""));
 			defaults.add(Pair.from(ProtocolSpecificSetting_5, ""));
-			defaults.add(Pair.from(FlashFeedback, true));
 			defaults.add(Pair.from(ProtocolCompileDirectory, "./settings"));
 
 			defaults.add(Pair.from(HTMLreportServerFile, outputDir));

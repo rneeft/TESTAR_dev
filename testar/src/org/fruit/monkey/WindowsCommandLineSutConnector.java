@@ -30,7 +30,6 @@
 
 package org.fruit.monkey;
 
-import es.upv.staq.testar.FlashFeedback;
 import es.upv.staq.testar.NativeLinker;
 import nl.ou.testar.SystemProcessHandling;
 import org.fruit.Util;
@@ -49,32 +48,28 @@ public class WindowsCommandLineSutConnector implements SutConnector {
     private long maxEngageTime;
     private StateBuilder builder;
     private boolean tryToKillIfRunning = true; //set to false after 1st re-try
-    private boolean flashFeedback;
 
-    public WindowsCommandLineSutConnector(String SUTConnectorValue, boolean processListenerEnabled, double startupTime, long maxEngageTime, StateBuilder builder, boolean flashFeedback) {
+    public WindowsCommandLineSutConnector(String SUTConnectorValue, boolean processListenerEnabled, double startupTime, long maxEngageTime, StateBuilder builder) {
         this.SUTConnectorValue = SUTConnectorValue;
         this.processListenerEnabled = processListenerEnabled;
         this.startupTime = startupTime;
         this.maxEngageTime = maxEngageTime;
         this.builder = builder;
-        this.flashFeedback = flashFeedback;
     }
 
     @Override
     public SUT startOrConnectSut() {
-
         SUT sut = NativeLinker.getNativeSUT(SUTConnectorValue, processListenerEnabled);
         //Print info to the user to know that TESTAR is NOT READY for its use :-(
         String printSutInfo = "Waiting for the SUT to be accessible ...";
-        int timeFlash = (int)startupTime;
+        int timeToStart = (int)startupTime;
 
-        //Refresh the flash information, to avoid that SUT hide the information
-        if (flashFeedback) {
-            int countTimeFlash = 0;
-            while(countTimeFlash<timeFlash && !sut.isRunning()) {
-                FlashFeedback.flash(printSutInfo, 2000);
-                countTimeFlash += 2000;
-            }
+        // Wait for the SUT...
+        int countTime = 0;
+        while(countTime < timeToStart && !sut.isRunning()) {
+            System.out.println(printSutInfo);
+            Util.pause(2);
+            countTime += 2000;
         }
 
         final long now = System.currentTimeMillis(),
@@ -82,11 +77,6 @@ public class WindowsCommandLineSutConnector implements SutConnector {
         State state;
         do{
             if (sut.isRunning()){
-                //Print info to the user to know that TESTAR is READY for its use :-)
-                if (flashFeedback) {
-                    printSutInfo = "SUT is READY";
-                    FlashFeedback.flash(printSutInfo,2000);
-                }
                 System.out.println("SUT is running after <" + (System.currentTimeMillis() - now) + "> ms ... waiting UI to be accessible");
                 state = builder.apply(sut);
                 if (state != null && state.childCount() > 0){
@@ -94,15 +84,11 @@ public class WindowsCommandLineSutConnector implements SutConnector {
                     System.out.println("SUT accessible after <" + (extraTime + (System.currentTimeMillis() - now)) + "> ms");
                     return sut;
                 }
-            }else {
-                //Print info to the user to know that TESTAR is NOT READY for its use :-(
-                if (flashFeedback) {
-                    printSutInfo = "Waiting for the SUT to be accessible ...";
-                    FlashFeedback.flash(printSutInfo, 500);
-                }
             }
+            
             Util.pauseMs(500);
         } while (System.currentTimeMillis() - now < ENGAGE_TIME); //TODO runtime controls QUIT does not work now: mode() != RuntimeControlsProtocol.Modes.Quit &&
+        
         if (sut.isRunning())
             sut.stop();
 

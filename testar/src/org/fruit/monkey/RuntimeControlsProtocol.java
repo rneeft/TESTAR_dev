@@ -32,14 +32,11 @@
 package org.fruit.monkey;
 
 import es.upv.staq.testar.EventHandler;
-import es.upv.staq.testar.FlashFeedback;
 import es.upv.staq.testar.IEventListener;
 import es.upv.staq.testar.serialisation.LogSerialiser;
 import org.fruit.alayer.devices.KBKeys;
 import org.fruit.alayer.devices.MouseButtons;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -50,7 +47,7 @@ public abstract class RuntimeControlsProtocol extends AbstractProtocol implement
     protected double delay = Double.MIN_VALUE;
     protected Object[] userEvent = null;
     protected boolean markParentWidget = false;
-    protected boolean visualizationOn = false;    
+    protected boolean visualizationOn = false;
 
     public enum Modes{
         Spy,
@@ -79,27 +76,23 @@ public abstract class RuntimeControlsProtocol extends AbstractProtocol implement
      * @param forward is set in keyDown method
      */
     private synchronized void nextMode() {
-    	switch(mode){
-    	case Record:
-    		mode = Modes.Generate; break;
-    	case Generate:
-    		mode = Modes.Record; break;
-    	default:
-    		break;
-    	}
-
-    	// Add some logging
-    	// Add the FlashFeedback about the mode you are in in the upper left corner.
-    	String modeParamS = "";
-    	if (mode == Modes.Record)
-    		modeParamS = " (" + settings.get(ConfigTags.TimeToWaitAfterAction) + " wait time between actions)";
-
-    	String modeNfo = "'" + mode + "' mode active." + modeParamS;
-    	LogSerialiser.log(modeNfo + "\n", LogSerialiser.LogLevel.Info);
-        if (settings.get(ConfigTags.FlashFeedback)) {
-    	    FlashFeedback.flash(modeNfo, 1000);
+        switch(mode){
+        case Record:
+            mode = Modes.Generate; break;
+        case Generate:
+            mode = Modes.Record; break;
+        default:
+            break;
         }
-    	
+
+        // Print some info about the mode you are and add some logging
+        String modeParamS = "";
+        if (mode == Modes.Record) {
+            modeParamS = " (" + settings.get(ConfigTags.TimeToWaitAfterAction) + " wait time between actions)";
+        }
+
+        String modeNfo = "'" + mode + "' mode active." + modeParamS;
+        LogSerialiser.log(modeNfo + "\n", LogSerialiser.LogLevel.Info);
     }
     
     //Old code to switch between modes
