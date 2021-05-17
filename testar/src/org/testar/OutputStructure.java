@@ -33,7 +33,6 @@ package org.testar;
 
 import java.io.File;
 
-import org.fruit.Environment;
 import org.fruit.Util;
 import org.fruit.monkey.ConfigTags;
 import org.fruit.monkey.Main;
@@ -51,6 +50,7 @@ public class OutputStructure {
 	public static String executedSUTname;
 	public static int sequenceInnerLoopCount;
 
+	public static String outerLoopName;
 	public static String outerLoopOutputDir;
 	public static String sequencesOutputDir;
 	public static String screenshotsOutputDir;
@@ -124,8 +124,8 @@ public class OutputStructure {
 	}
 
 	public static void createOutputFolders() {
-
-		outerLoopOutputDir = Main.outputDir + File.separator + startOuterLoopDateString + "_" + executedSUTname;
+	    outerLoopName = startOuterLoopDateString + "_" + executedSUTname;
+	    outerLoopOutputDir = Main.outputDir + File.separator + outerLoopName;
 		File runDir = new File(outerLoopOutputDir);
 		runDir.mkdirs();
 
